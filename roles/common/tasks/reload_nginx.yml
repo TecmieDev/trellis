@@ -1,12 +1,9 @@
 ---
-- name: test nginx conf
-  command: nginx -t
-  register: nginx_test
-  changed_when: false
-
 - name: reload nginx
+  command: nginx -t
+  notify: "{{ (role_path | basename == 'common') | ternary('perform nginx reload', omit) }}"
+
+- name: perform nginx reload
   service:
     name: nginx
     state: reloaded
-  when: nginx_test | success
-  changed_when: false
